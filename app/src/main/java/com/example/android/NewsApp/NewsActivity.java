@@ -39,12 +39,8 @@ public class NewsActivity extends AppCompatActivity
         implements LoaderCallbacks<List<News>> {
 
     private static final String LOG_TAG = NewsActivity.class.getName();
-    String apiKey = BuildConfig.ApiKey;
+    String apiKey = com.example.android.NewsApp.BuildConfig.ApiKey;;
 
-//    /** URL for article data from the Guardian dataset */
-//    private static final String GUARDIAN_REQUEST_URL = "https://content.guardianapis.com/search?section=football&api-key=c6648b05-4d5b-4a41-8bae-486072c5546a";
-//
-//
     private static final String FOOTBALL_REQUEST_URL = "https://content.guardianapis.com/search?section=football";
     private final String GUARDIAN_REQUEST_URL = FOOTBALL_REQUEST_URL + "&api-key=" + apiKey;
 
