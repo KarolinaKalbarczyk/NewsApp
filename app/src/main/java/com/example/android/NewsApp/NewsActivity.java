@@ -25,7 +25,6 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.appcompat.BuildConfig;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -38,10 +37,9 @@ import java.util.List;
 public class NewsActivity extends AppCompatActivity
         implements LoaderCallbacks<List<News>> {
 
-    private static final String LOG_TAG = NewsActivity.class.getName();
     String apiKey = com.example.android.NewsApp.BuildConfig.ApiKey;;
 
-    private static final String FOOTBALL_REQUEST_URL = "https://content.guardianapis.com/search?section=football";
+    private static final String FOOTBALL_REQUEST_URL = "https://content.guardianapis.com/search?&show-tags=contributor&section=football";
     private final String GUARDIAN_REQUEST_URL = FOOTBALL_REQUEST_URL + "&api-key=" + apiKey;
 
 
@@ -137,13 +135,12 @@ public class NewsActivity extends AppCompatActivity
         mEmptyStateTextView.setText(R.string.no_article);
 
         // Clear the adapter of previous article data
-        //mAdapter.clear();
+        mAdapter.clear();
         
         // If there is a valid list of {@link News}s, then add them to the adapter's
         // data set. This will trigger the ListView to update.
         if (allNews != null && !allNews.isEmpty()) {
             mAdapter.addAll(allNews);
-            //updateUi(allNews);
         }
     }
 

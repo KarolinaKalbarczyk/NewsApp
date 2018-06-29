@@ -29,17 +29,26 @@ public class News {
     /** Website URL of the article */
     private String mWebUrl;
 
+    /** Author of the article*/
+    private String mAuthor;
+
+    /**Section of the article*/
+    private String mSection;
+
+
     /**
      * Constructs a new {@link News} object.
-     *
-     * @param webTitle is the webTitle (size) of the earthquake
+     *  @param webTitle is the webTitle (size) of the earthquake
      * @param webPublicationDate is the date when article was publicated
      * @param webUrl is the website URL to find more details about the article
+     * @param sectionName
      */
-    public News(String webTitle, String webPublicationDate, String webUrl) {
+    public News(String webTitle, String webPublicationDate, String webUrl, String author, String sectionName) {
         mWebTitle = webTitle;
         mWebPublicationDate = webPublicationDate;
         mWebUrl = webUrl;
+        mAuthor = author;
+        mSection = sectionName;
     }
 
     /**
@@ -62,4 +71,8 @@ public class News {
     public String getUrl() {
         return mWebUrl;
     }
+
+    public String getAuthor(){return mAuthor;}
+
+    public String getSection(){return mSection;}
 }

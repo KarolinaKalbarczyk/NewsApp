@@ -17,7 +17,10 @@ package com.example.android.NewsApp;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
+import android.util.Log;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -44,9 +47,7 @@ public class NewsLoader extends AsyncTaskLoader<List<News>> {
     }
 
     @Override
-    protected void onStartLoading() {
-        forceLoad();
-    }
+    protected void onStartLoading() {forceLoad(); }
 
     /**
      * This is on a background thread.

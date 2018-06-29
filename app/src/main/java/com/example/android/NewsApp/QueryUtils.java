@@ -30,8 +30,12 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Helper methods related to requesting and receiving data from Guardian.
@@ -84,11 +88,27 @@ public final class QueryUtils {
         return url;
     }
 
+    private static String formatDate(String rawDate) {
+        String jsonDatePattern = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+        SimpleDateFormat jsonFormatter = new SimpleDateFormat(jsonDatePattern, Locale.US);
+        try {
+            Date parsedJsonDate = jsonFormatter.parse(rawDate);
+            String finalDatePattern = "MMM d, yyy";
+            SimpleDateFormat finalDateFormatter = new SimpleDateFormat(finalDatePattern, Locale.US);
+            return finalDateFormatter.format(parsedJsonDate);
+        } catch (ParseException e) {
+            Log.e("QueryUtils", "Error parsing JSON date: ", e);
+            return "";
+        }
+    }
+
     /**
      * Make an HTTP request to the given URL and return a String as the response.
      */
     private static String makeHttpRequest(URL url) throws IOException {
         String jsonResponse = "";
+        final int ReadTime = 10000;
+        final int ConnectTime = 15000;
 
         // If the URL is null, then return early.
         if (url == null) {
@@ -99,8 +119,8 @@ public final class QueryUtils {
         InputStream inputStream = null;
         try {
             urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setReadTimeout(10000 /* milliseconds */);
-            urlConnection.setConnectTimeout(15000 /* milliseconds */);
+            urlConnection.setReadTimeout(ReadTime /* milliseconds */);
+            urlConnection.setConnectTimeout(ConnectTime /* milliseconds */);
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
 
@@ -113,7 +133,7 @@ public final class QueryUtils {
                 Log.e(LOG_TAG, "Error response code: " + urlConnection.getResponseCode());
             }
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Problem retrieving the earthquake JSON results.", e);
+            Log.e(LOG_TAG, "Problem retrieving the article JSON results.", e);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -176,36 +196,50 @@ public final class QueryUtils {
             // for that news.
             JSONArray properties = newsObject.getJSONArray("results");
 
-            // For each earthquake in the newsObject, create an {@link News} object
+            // For each article in the newsObject, create an {@link News} object
+            News news = null;
             for (int i = 0; i < properties.length(); i++) {
 
                 // Get a single news at position i within the list of allNews
                 JSONObject currentNews = properties.getJSONObject(i);
-
-
 
                 // Extract the value for the key called "place"
                 String webTitle = currentNews.getString("webTitle");
 
                 // Extract the value for the key called "webPublicationDate"
                 String webPublicationDate = currentNews.getString("webPublicationDate");
+                webPublicationDate = formatDate(webPublicationDate);
 
                 // Extract the value for the key called "webUrl"
                 String webUrl = currentNews.getString("webUrl");
 
+                String section = currentNews.getString("sectionName");
+                JSONArray tagsArray = currentNews.getJSONArray("tags");
+
+                String author = "";
+
+                if (tagsArray.length() == 0) {
+                    author = null;
+                } else {
+                    for (int j = 0; j < section.length(); j++) {
+                        JSONObject firstObject = tagsArray.getJSONObject(j);
+                        author += firstObject.getString("webTitle") + ". ";
+                    }
+                }
                 // Create a new {@link News} object with the magnitude, webTitle, webPublicationDate,
                 // and webUrl from the JSON response.
-                News news = new News(webTitle, webPublicationDate, webUrl);
-
-                // Add the new {@link News} to the list of allNews.
-                allNews.add(news);
+                news = new News(webTitle, webPublicationDate, webUrl, author, section);
             }
+
+            // Add the new {@link News} to the list of allNews.
+            allNews.add(news);
+
 
         } catch (JSONException e) {
             // If an error is thrown when executing any of the above statements in the "try" block,
             // catch the exception here, so the app doesn't crash. Print a log message
             // with the message from the exception.
-            Log.e("QueryUtils", "Problem parsing the earthquake JSON results", e);
+            Log.e("QueryUtils", "Problem parsing the article JSON results", e);
         }
 
         // Return the list of allNews
@@ -213,3 +247,4 @@ public final class QueryUtils {
     }
 
 }
+
