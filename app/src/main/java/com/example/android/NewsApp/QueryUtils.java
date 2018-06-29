@@ -221,7 +221,7 @@ public final class QueryUtils {
                 if (tagsArray.length() == 0) {
                     author = null;
                 } else {
-                    for (int j = 0; j < section.length(); j++) {
+                    for (int j = 0; j < tagsArray.length(); j++) {
                         JSONObject firstObject = tagsArray.getJSONObject(j);
                         author += firstObject.getString("webTitle") + ". ";
                     }
@@ -229,10 +229,11 @@ public final class QueryUtils {
                 // Create a new {@link News} object with the magnitude, webTitle, webPublicationDate,
                 // and webUrl from the JSON response.
                 news = new News(webTitle, webPublicationDate, webUrl, author, section);
+                // Add the new {@link News} to the list of allNews.
+                allNews.add(news);
             }
 
-            // Add the new {@link News} to the list of allNews.
-            allNews.add(news);
+
 
 
         } catch (JSONException e) {
